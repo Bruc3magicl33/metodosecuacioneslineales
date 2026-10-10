@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entrenador de sistemas 2×2 — Igualación paso a paso</title>
+<script type="module">import 'https://esm.run/mathlive';</script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f8fb;color:#1f2937;font-family:Arial,sans-serif}.wrap{max-width:980px;margin:auto;padding:18px}.card,.step{background:white;border:1px solid #d9e0ea;border-radius:15px;padding:16px;margin-bottom:15px}.author,.hint,.small{color:#64748b;font-size:14px}.author{font-weight:bold;margin-bottom:16px}.top,.actions,.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.actions{justify-content:flex-start;margin-top:10px}.header strong{font-size:17px}.attempt{font-size:13px;color:#64748b}button{background:#2563eb;border:0;border-radius:9px;padding:10px 15px;color:white;font-size:15px;font-weight:bold;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.gray{background:#64748b}select{padding:10px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}math-field{display:block;width:100%;min-height:100px;max-height:165px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;font-size:26px;padding:22px 12px;border:2px solid #e2e8f0;border-radius:13px;margin:10px 0}math-field[disabled]{background:#f1f5f9;opacity:.65}.system{font-size:28px;text-align:center;overflow:auto;padding:22px;border:1px dashed #cbd5e1;border-radius:12px;margin-top:15px}.formula{text-align:center;padding:12px;background:#f8fafc;border-radius:10px;margin-top:14px}.feedback{font-weight:bold}.ok{color:#15803d}.bad{color:#b91c1c}.hint{color:#a16207;margin-top:8px}.hidden{display:none!important}.success{background:#f0fdf4;border-color:#86efac}.eqname{font-size:14px;font-weight:bold;margin-top:14px}.substep{margin-top:13px;padding:14px;border:1px solid #e2e8f0;border-radius:12px}.substep.inactive{opacity:.58;background:#f8fafc}.substep.completed{border-color:#bbf7d0;background:#f0fdf4}.progress{font-size:13px;color:#64748b;margin-top:5px}@media(max-width:650px){.wrap{padding:12px}.system{font-size:23px}math-field{font-size:23px}.top button{width:100%}}
+</style></head><body><main class="wrap">
+<h1>Entrenador de sistemas de ecuaciones 2×2</h1><div class="author">Creado por Ing. Antonio García Rodríguez</div>
+<section class="card"><div class="top"><div><b>Método de resolución</b><p><select id="method"><option value="igualacion">Igualación</option><option value="sustitucion">Sustitución</option><option value="eliminacion">Eliminación</option></select></p></div><button id="new">Nuevo ejercicio 🔄</button></div><p class="small">Cada subpaso se activa al completar el anterior. Tres intentos por subpaso.</p><label id="equalVariable"><b>Incógnita a despejar: </b><select id="variable"><option value="y">y</option><option value="x">x</option></select></label><div class="formula" id="methodFormula">Método de igualación: \(\text{despeje 1}=\text{despeje 2}\)</div><div id="system" class="system"></div></section>
+<div id="equalitySteps"><section class="step" id="section1"><div class="header"><strong>Paso 1. Despejar la misma incógnita en ambas ecuaciones</strong><span class="attempt" id="attempt1">Intentos: 0/3</span></div><div class="eqname">Despeje de la ecuación 1 (incluye =)</div><math-field id="m1a" virtual-keyboard-mode="off"></math-field><div class="eqname">Despeje de la ecuación 2</div><math-field id="m1b" virtual-keyboard-mode="off"></math-field><div class="actions"><button id="b1">Revisar</button><span class="feedback" id="f1"></span></div><div class="hint" id="h1"></div></section>
+<section class="step" id="section2"><div class="header"><strong>Paso 2. Igualar los despejes sin resolver</strong><span class="attempt" id="attempt2">Intentos: 0/3</span></div><math-field id="m2" disabled virtual-keyboard-mode="off"></math-field><div class="actions"><button id="b2" disabled>Revisar</button><span class="feedback" id="f2"></span></div><div class="hint" id="h2"></div></section>
+<section class="step" id="section22"><div class="header"><strong>Paso 2.2. Eliminar denominadores: multiplicación indicada</strong><span class="attempt" id="attempt22">Intentos: 0/3</span></div>
+<p class="small">Multiplica en cruz y deja los productos indicados, sin distribuir todavía.</p>
+<math-field id="m22" virtual-keyboard-mode="off" disabled></math-field>
+<div class="actions"><button id="b22" disabled>Revisar</button><button class="gray" id="na22" disabled>No aplica</button><span class="feedback" id="f22"></span></div><div class="hint" id="h22"></div></section>
+<section class="step" id="section23"><div class="header"><strong>Paso 2.3. Eliminar paréntesis y efectuar las multiplicaciones</strong><span class="attempt" id="attempt23">Intentos: 0/3</span></div>
+<p class="small">Desarrolla los productos de ambos lados. Conserva las variables y constantes antes de agruparlas.</p>
+<math-field id="m23" virtual-keyboard-mode="off" disabled></math-field>
+<div class="actions"><button id="b23" disabled>Revisar</button><button class="gray" id="na23" disabled>No aplica</button><span class="feedback" id="f23"></span></div><div class="hint" id="h23"></div></section>
+<section class="step"><div class="header"><strong id="title3">Paso 3. Encontrar x</strong></div><p class="small">Transforma la ecuación progresivamente. No saltes directamente al resultado.</p><div id="sub3"></div></section>
+<section class="step"><div class="header"><strong id="title4">Paso 4. Encontrar y</strong></div><p class="small">Sustituye el valor obtenido en cualquiera de los dos despejes del paso 1.</p><div id="sub4"></div></section>
+</div><div id="substitutionSteps" class="hidden"></div><div id="eliminationSteps" class="hidden"></div><section id="done" class="card success hidden"><strong>✅ ¡Ejercicio resuelto correctamente!</strong><p>La comprobación es opcional y no afecta tu resultado.</p><button class="gray" id="toggle">Comprobar solución (opcional)</button><div id="checkarea" class="hidden"><p class="small">Escribe el valor del lado izquierdo de cada ecuación después de sustituir x e y.</p><div class="eqname">Ecuación 1</div><math-field id="c1" virtual-keyboard-mode="off"></math-field><div class="eqname">Ecuación 2</div><math-field id="c2" virtual-keyboard-mode="off"></math-field><div class="actions"><button id="bc">Revisar comprobación</button><span id="fc" class="feedback"></span></div></div></section></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+let E,tries={},blocked=false,active='1',route={},chosenEquation=1;
+const ids=['1','2','22','23','31','32','33','34','41','42','43'];
+function nonzero(){let v;do{v=rand(-5,5)}while(!v);return v}
+function format(a,b,c){return(a===1?'':a===-1?'-':a)+'x'+(b<0?'-':'+')+(Math.abs(b)===1?'':Math.abs(b))+'y='+c}
+function convert(raw){
+ let s=String(raw||'').replace(/\\left|\\right|\\displaystyle/g,'').replace(/\\cdot|\\times/g,'*').replace(/\\,/g,'').replace(/−/g,'-').replace(/\s+/g,'');
+ for(let k=0;k<25;k++){let old=s;s=s.replace(/\\(?:dfrac|tfrac|frac)\{([^{}]*)\}\{([^{}]*)\}/g,'(($1)/($2))');if(s===old)break}
+ return s.replace(/\\frac(-?\d)(\d)/g,'(($1)/($2))').replace(/\\operatorname\{([^}]+)\}/g,'$1').replace(/\{/g,'(').replace(/\}/g,')').replace(/\\/g,'').replace(/(\d|[xy]|\))(?=\()/g,'$1*');
+}
+function parts(raw){let p=convert(raw).split('=');if(p.length!==2||!p[0]||!p[1])throw Error('Escribe una igualdad completa con =.');return p}
+function val(expr,vars={}){if(!window.math)throw Error('No se cargó el motor matemático. Revisa la conexión.');let n=math.evaluate(expr,vars);if(typeof n!=='number'||!Number.isFinite(n))throw Error('Expresión no válida.');return n}
+function near(a,b){return Math.abs(a-b)<1e-8*Math.max(1,Math.abs(a),Math.abs(b))}
+function eqv(a,b){let good=0;for(let z of [-9,-7,-5,-3,-2,-1,0,1,2,3,5,7,9]){try{if(!near(val(a,{x:z,y:z}),val(b,{x:z,y:z})))return false;good++}catch(e){}}return good>=6}
+function isolated(index,v){let {a,b,c,d,e,f}=E,A=index===1?a:c,B=index===1?b:d,C=index===1?e:f;return v==='y'?`(${C}-(${A})*x)/(${B})`:`(${C}-(${B})*y)/(${A})`}
+function checkIsolated(raw,index,v){let [l,r]=parts(raw);return l===v&&!r.includes(v)&&eqv(r,isolated(index,v))}
+function checkEqual(raw,v){let [l,r]=parts(raw),a=isolated(1,v),b=isolated(2,v);return eqv(l,a)&&eqv(r,b)||eqv(l,b)&&eqv(r,a)}
+function linear(s,v){return {k:val(s,{x:v==='x'?1:0,y:v==='y'?1:0})-val(s,{x:0,y:0}),c:val(s,{x:0,y:0})}}
+function other(){return $('variable').value==='x'?'y':'x'}
+function baseCoeffs(){let {a,b,c,d,e,f}=E,v=other();let A=v==='x'?a:b,B=v==='x'?b:a,C=v==='x'?c:d,D=v==='x'?d:c; // (e-A*v)/B=(f-C*v)/D
+ return {L:-D*A+B*C,R:B*f-D*e, v};
+}
+function equationEquivalent(p,q){let [a,b]=p,[c,d]=q;return eqv(`(${a})-(${b})`,`(${c})-(${d})`)}
+function topTerms(s){ // terms of additive expression, respecting parentheses
+ const n=math.parse(s);
+ function flatten(node,sign=1){if(node.isOperatorNode&&node.op==='+')return [...flatten(node.args[0],sign),...flatten(node.args[1],sign)];if(node.isOperatorNode&&node.op==='-'&&node.args.length===2)return [...flatten(node.args[0],sign),...flatten(node.args[1],-sign)];return [{node,sign}]}
+ return flatten(n);
+}
+function termsHaveVariable(terms,v){return terms.every(t=>new RegExp('\\b'+v+'\\b').test(t.node.toString()))}
+function termsAreNumeric(terms){return terms.every(t=>!/[xy]/.test(t.node.toString()))}
+function grouped(raw){let p=parts(raw),v=other(),bc=baseCoeffs(),l=linear(p[0],v),r=linear(p[1],v);
+ const leftVar=near(l.c,0)&&near(r.k,0),rightVar=near(r.c,0)&&near(l.k,0);
+ if(!leftVar&&!rightVar)return false;
+ const variableSide=leftVar?p[0]:p[1],constantSide=leftVar?p[1]:p[0];
+ const vt=topTerms(variableSide),ct=topTerms(constantSide);
+ if(vt.length<2||ct.length<2||!termsHaveVariable(vt,v)||!termsAreNumeric(ct))return false;
+ // Accept sign-reversed and both-side layouts; require original cross-multiplication coefficients.
+ let k=leftVar?l.k:r.k,number=leftVar?r.c:l.c;
+ return (near(k,bc.L)&&near(number,bc.R))||(near(k,-bc.L)&&near(number,-bc.R));
+}
+function simplified(raw){let p=parts(raw),v=other(),bc=baseCoeffs(),l=linear(p[0],v),r=linear(p[1],v);
+ if(!(near(l.c,0)&&near(r.k,0)||near(r.c,0)&&near(l.k,0)))return false;
+ let vt=near(l.c,0)?topTerms(p[0]):topTerms(p[1]),ct=near(l.c,0)?topTerms(p[1]):topTerms(p[0]);
+ if(vt.length!==1||ct.length!==1)return false;
+ let k=near(l.c,0)?l.k:r.k,n=near(l.c,0)?r.c:l.c;
+ return (near(k,bc.L)&&near(n,bc.R))||(near(k,-bc.L)&&near(n,-bc.R));
+}
+function isFinal(raw,v,expected){let p=parts(raw);return p[0]===v&&!/[xy]/.test(p[1])&&near(val(p[1]),expected)}
+function hasUnreducedDivision(expr){let node=math.parse(expr);let division=false;node.traverse(n=>{if(n.isOperatorNode&&n.op==='/')division=true});return division}
+function divisionStage(raw,v,expected,requireDivision){let p=parts(raw);if(p[0]!==v||/[xy]/.test(p[1])||!near(val(p[1]),expected))return false;
+ return !requireDivision||hasUnreducedDivision(p[1]);
+}
+function buildSubs(){
+ const names={
+ '31':'3.1. Agrupar variables y constantes','32':'3.2. Simplificar términos semejantes',
+ '33':'3.3. Despejar la variable','34':'3.4. Simplificar el resultado',
+ '41':'4.1. Sustituir el valor conocido','42':'4.2. Simplificar las operaciones numéricas',
+ '43':'4.3. Simplificar el resultado'
+ };
+ for(const section of [3,4]){
+  $(section===3?'sub3':'sub4').innerHTML=Object.keys(names).filter(k=>k.startsWith(String(section))).map(k=>`<div class="substep inactive" id="box${k}"><div class="header"><strong id="name${k}">${names[k]}</strong><span class="attempt" id="attempt${k}">Intentos: 0/3</span></div><div class="small" id="instruction${k}"></div><math-field id="m${k}" virtual-keyboard-mode="off" disabled></math-field><div class="actions"><button id="b${k}" disabled>Revisar</button><button id="na${k}" class="gray hidden" disabled>No aplica</button><span class="feedback" id="f${k}"></span></div><div class="hint" id="h${k}"></div></div>`).join('');
+ }
+ for(let k of Object.keys(names)){$('b'+k).onclick=()=>review(k);$('na'+k).onclick=()=>review(k,true)}
+}
+function reset(){
+ let a,b,c,d;do{a=nonzero();b=nonzero();c=nonzero();d=nonzero()}while(a*d===b*c);
+ let x=rand(-5,5),y=rand(-5,5),e=a*x+b*y,f=c*x+d*y;E={a,b,c,d,e,f,x,y};tries={};blocked=false;active='1';route={};chosenEquation=1;
+ $('variable').disabled=$('method').value!=='igualacion';$('variable').value='y';
+ $('system').innerHTML='\\(\\begin{cases}'+format(a,b,e)+'\\\\'+format(c,d,f)+'\\end{cases}\\)';
+ if(window.MathJax)MathJax.typesetPromise([$('system')]);
+ for(const k of ids){tries[k]=0;$('attempt'+k).textContent='Intentos: 0/3';$('f'+k).textContent='';$('f'+k).className='feedback';$('h'+k).textContent='';$('b'+k).disabled=k!=='1';if(k.length===2){$('m'+k).disabled=true;$('m'+k).value='';if($('box'+k))$('box'+k).className='substep inactive';$('na'+k).disabled=true;if(k!=='22'&&k!=='23')$('na'+k).classList.add('hidden')}}
+ for(const k of ['m1a','m1b','m2','c1','c2'])$(k).value='';
+ $('m1a').disabled=false;$('m1b').disabled=false;$('m2').disabled=true;
+ $('equalVariable').classList.toggle('hidden',$('method').value!=='igualacion');$('methodFormula').classList.toggle('hidden',$('method').value!=='igualacion');$('done').classList.add('hidden');$('equalitySteps').classList.toggle('hidden',$('method').value!=='igualacion');$('substitutionSteps').classList.toggle('hidden',$('method').value!=='sustitucion');$('eliminationSteps').classList.toggle('hidden',$('method').value!=='eliminacion');if($('method').value==='sustitucion')resetSubstitution();if($('method').value==='eliminacion')elimReset();$('checkarea').classList.add('hidden');$('fc').textContent='';labels();
+}
+function labels(){
+ let v=$('variable').value,w=other();$('title3').textContent='Paso 3. Encontrar '+w;$('title4').textContent='Paso 4. Encontrar '+v;
+ $('instruction31').textContent='Coloca '+w+' a un lado y los números al otro. Conserva los dos términos de cada lado.';
+ $('instruction32').textContent='Reduce los términos semejantes a un término por lado.';
+ $('instruction33').textContent='Escribe '+w+'= (división entre coeficiente), sin efectuar la división.';
+ $('instruction34').textContent='Expresa el resultado final simplificado.';
+ $('instruction41').textContent='Sustituye '+w+' en cualquiera de los dos despejes del paso 1. Conserva las operaciones indicadas.';
+ $('instruction42').textContent='Efectúa las operaciones numéricas del despeje elegido.';
+ $('instruction43').textContent='Escribe el resultado final simplificado. Si ya lo obtuviste en 4.2, selecciona No aplica.';
+}
+// Igualación: el paso 4 usa exclusivamente los despejes del paso 1.
+let equalityStep4Choice=0;
+function equalityIsolatedSub(index){
+ const v=$('variable').value,w=other(),z=E[w];
+ const A=index===1?E.a:E.c,B=index===1?E.b:E.d,C=index===1?E.e:E.f;
+ const cv=v==='y'?A:B,dv=v==='y'?B:A;
+ return {v,w,z,cv,dv,C,expr:`((${C})-(${cv})*(${z}))/(${dv})`};
+}
+function stage1Sub(raw){
+ const [l,r]=parts(raw),v=$('variable').value;
+ if(l!==v||/[xy]/.test(r))return false;
+ for(let i=1;i<=2;i++){
+  const d=equalityIsolatedSub(i);
+  if(!eqv(r,d.expr))continue;
+  // El alumno debe mostrar la sustitución, no únicamente el resultado.
+  const normalized=convert(raw);
+  const hasOperation=/[+*/]/.test(r.slice(1))||/\d-\d/.test(r)||r.includes('*')||/-(?:\s*\()?\s*-?\d+\s*\)/.test(r)||/-(?:\s*\()?\s*-\s*\(/.test(r);
+  if(!hasOperation||!r.includes(String(d.z)))return false;
+  equalityStep4Choice=i;
+  return true;
+ }
+ return false;
+}
+function stage2Sub(raw){
+ const [l,r]=parts(raw),d=equalityIsolatedSub(equalityStep4Choice||1);
+ if(l!==d.v||/[xy]/.test(r)||!near(val(r),E[d.v]))return false;
+ // Se permite efectuar primero el producto del numerador, dejando la división.
+ return true;
+}
+function stage3Sub(raw){
+ const [l,r]=parts(raw),d=equalityIsolatedSub(equalityStep4Choice||1);
+ return l===d.v&&!/[xy]/.test(r)&&near(val(r),E[d.v]);
+}
+function need34(){const {L,R}=baseCoeffs();return Math.abs(L)!==1}
+function equality43NoAplica(){
+ try{const [l,r]=parts($('m42').value),v=$('variable').value;return l===v&&!/[xy]/.test(r)&&near(val(r),E[v])&&!hasUnreducedDivision(r)&&topTerms(r).length===1;}catch(e){return false}
+}
+
+function denominatorInfo(){
+ const v=$('variable').value, w=other(), {a,b,c,d,e,f}=E;
+ const A=w==='x'?a:b, B=v==='x'?a:b;
+ const C=w==='x'?c:d, D=v==='x'?c:d;
+ return {A,B,C,D,e,f,w,
+  n1:`(${e})-(${A})*${w}`,n2:`(${f})-(${C})*${w}`,
+  left:`(${D})*((${e})-(${A})*${w})`,
+  right:`(${B})*((${f})-(${C})*${w})`};
+}
+function needCross(){const {B,D}=denominatorInfo();return Math.abs(B)!==1||Math.abs(D)!==1;}
+function multiplicativeFactors(expr){
+ const n=math.parse(expr);
+ const factors=[];
+ function visit(node){
+  if(node.isParenthesisNode)return visit(node.content);
+  if(node.isOperatorNode&&node.op==='*'&&node.args.length===2){visit(node.args[0]);visit(node.args[1]);return;}
+  factors.push(node.toString());
+ }
+ visit(n);return factors;
+}
+function crossSideMatches(expr,coefficient,numerator){
+ const factors=multiplicativeFactors(expr);
+ if(Math.abs(coefficient)===1 && factors.length===1){
+   return eqv(expr,numerator)||eqv(expr,`-(${numerator})`);
+ }
+ if(factors.length!==2)return false;
+ // La fracción original puede tener el signo negativo en el numerador
+ // o en el denominador: ambos formatos representan el mismo despeje.
+ const pair=(a,b)=>eqv(a,String(Math.abs(coefficient))) &&
+   (eqv(b,numerator)||eqv(b,`-(${numerator})`));
+ return pair(factors[0],factors[1])||pair(factors[1],factors[0]);
+}
+function proportionalEquations(left,right,expectedLeft,expectedRight,w){
+ const actual=linear(`(${left})-(${right})`,w);
+ const expected=linear(`(${expectedLeft})-(${expectedRight})`,w);
+ if(near(expected.k,0)&&near(expected.c,0))return false;
+ const factor=Math.abs(expected.k)>1e-9?actual.k/expected.k:actual.c/expected.c;
+ return Math.abs(factor)>1e-9 && near(actual.k,factor*expected.k)&&near(actual.c,factor*expected.c);
+}
+function checkCross(raw){
+ const [l,r]=parts(raw),z=denominatorInfo();
+ const normal=crossSideMatches(l,z.D,z.n1)&&crossSideMatches(r,z.B,z.n2);
+ const swapped=crossSideMatches(r,z.D,z.n1)&&crossSideMatches(l,z.B,z.n2);
+ // No basta con reconocer factores: también deben producir la misma ecuación.
+ return (normal||swapped)&&proportionalEquations(l,r,z.left,z.right,z.w);
+}
+function expandedSide(expr,coefficient,constant,variableCoefficient,w){
+ const terms=topTerms(expr);
+ if(terms.length!==2)return false;
+ const line=linear(expr,w);
+ return near(line.c,coefficient*constant)&&near(line.k,-coefficient*variableCoefficient);
+}
+function checkExpanded(raw){
+ const [l,r]=parts(raw),z=denominatorInfo();
+ const first=x=>expandedSide(x,z.D,z.e,z.A,z.w);
+ const second=x=>expandedSide(x,z.B,z.f,z.C,z.w);
+ return ((first(l)&&second(r))||(first(r)&&second(l))) || (
+   topTerms(l).length===2 && topTerms(r).length===2 &&
+   proportionalEquations(l,r,z.left,z.right,z.w)
+ );
+}
+function check(k,na){
+ const v=$('variable').value,w=other();
+ if(na)return ((k==='22'||k==='23')&&!needCross())||(k==='34'&&!need34())||(k==='43'&&equality43NoAplica());
+ if(k==='1')return checkIsolated($('m1a').value,1,v)&&checkIsolated($('m1b').value,2,v);
+ if(k==='2')return checkEqual($('m2').value,v);
+ if(k==='22')return needCross()&&checkCross($('m22').value);
+ if(k==='23')return needCross()&&checkExpanded($('m23').value);
+ const raw=$('m'+k).value;
+ if(k==='31')return grouped(raw);
+ if(k==='32')return simplified(raw);
+ if(k==='33')return divisionStage(raw,w,E[w],need34());
+ if(k==='34')return isFinal(raw,w,E[w])&&!hasUnreducedDivision(parts(raw)[1]);
+ if(k==='41')return stage1Sub(raw);
+ if(k==='42')return stage2Sub(raw);
+ if(k==='43')return stage3Sub(raw);
+ 
+ return false;
+}
+function unlock(k){
+ active=k;$('b'+k).disabled=false;
+ if(k==='1'){$('m1a').disabled=false;$('m1b').disabled=false}
+ else if(k==='2')$('m2').disabled=false;
+ else{$('m'+k).disabled=false;if($('box'+k))$('box'+k).classList.remove('inactive');$('na'+k).disabled=false;
+ if((k==='34'&&!need34())||(k==='43'&&equality43NoAplica()))$('na'+k).classList.remove('hidden');}
+}
+function lockAll(){blocked=true;for(let k of ids){$('b'+k).disabled=true;if(k.length===2){$('m'+k).disabled=true;$('na'+k).disabled=true}}for(let k of ['m1a','m1b','m2'])$(k).disabled=true}
+function review(k,na=false){
+ if(blocked||active!==k)return;
+ try{
+  if(check(k,na)){
+   $('f'+k).textContent='✅ Correcto'+(na?': no aplica':'');$('f'+k).className='feedback ok';$('b'+k).disabled=true;
+   if(k.length===2){$('m'+k).disabled=true;$('na'+k).disabled=true;if($('box'+k))$('box'+k).classList.add('completed')}
+   if(k==='1'){$('m1a').disabled=true;$('m1b').disabled=true;$('variable').disabled=true}
+   if(k==='2')$('m2').disabled=true;
+   let next=ids[ids.indexOf(k)+1];if(next)unlock(next);else{$('done').classList.remove('hidden');active='done'}
+   return;
+  }
+  $('f'+k).textContent='❌ '+(na?'Este paso sí requiere simplificación.':'La transformación no corresponde a este subpaso.');
+ }catch(err){$('f'+k).textContent='❌ '+err.message}
+ tries[k]++;$('attempt'+k).textContent='Intentos: '+tries[k]+'/3';$('f'+k).className='feedback bad';
+ if(tries[k]===2)$('h'+k).textContent={
+ '1':'Despeja la misma incógnita en las dos ecuaciones.',
+ '2':'Iguala las dos expresiones sin resolver.',
+ '22':'Multiplica cada numerador por el denominador del otro lado. No desarrolles los productos.',
+ '23':'Aplica la propiedad distributiva a cada lado; conserva dos términos por lado.',
+ '31':'Distribuye o elimina denominadores y agrupa los términos con variable de un lado y las constantes del otro.',
+ '32':'Suma los coeficientes de la variable y las constantes por separado.',
+ '33':'Divide ambos lados entre el coeficiente de la variable. No efectúes la división todavía.',
+ '34':'Reduce la fracción o calcula el cociente.',
+ '41':'Sustituye en cualquiera de los dos despejes del paso 1, no en las ecuaciones originales.',
+ '42':'Multiplica los números y conserva el término de la variable pendiente.',
+ '43':'Simplifica la fracción o escribe el resultado final. Si 4.2 ya quedó simplificado, usa No aplica.'
+ }[k];
+ if(tries[k]>=3){lockAll();$('f'+k).textContent='❌ Ejercicio bloqueado. Presiona Nuevo ejercicio.'}
+}
+
+// Sustitución: módulo aislado, sin alterar el validador de igualación.
+const subIDs=['s1','s21','s22','s23','s24','s31','s32','s33','s34','s41','s42','s43'];
+let subIndex=0,subTries={},subEq=1,subVar='y',subKnown='x',subBlocked=false,subRoute=null,subRouteEq=null;
+const subNames=[
+ ['s1','1. Despejar una incógnita','Escribe el despeje completo de la ecuación elegida.'],
+ ['s21','2.1. Sustituir en la otra ecuación','Sustituye el despeje entre paréntesis, sin distribuir.'],
+ ['s22','2.2. Multiplicar por el denominador común','Multiplica ambos miembros; deja las operaciones indicadas.'],
+ ['s23','2.3. Cancelar denominadores','Cancela el denominador. Los paréntesis exteriores son opcionales cuando no se necesitan.'],
+ ['s24','2.4. Eliminar paréntesis','Distribuye y conserva las variables y constantes antes de agrupar.'],
+ ['s31','3.1. Agrupar variables y constantes','Coloca los términos con variable a un lado y las constantes al otro.'],
+ ['s32','3.2. Simplificar términos semejantes','Reduce a un solo término por lado.'],
+ ['s33','3.3. Despejar la variable','Deja indicada la división entre el coeficiente.'],
+ ['s34','3.4. Simplificar el resultado','Escribe el resultado final simplificado.'],
+ ['s41','4.1. Sustituir el valor encontrado','Puedes sustituir en el despeje del paso 1 o en cualquiera de las ecuaciones originales.'],
+ ['s42','4.2. Efectuar operaciones','Simplifica las operaciones numéricas conservando la incógnita por encontrar.'],
+ ['s43','4.3. Escribir el resultado final','Expresa la segunda incógnita con su valor simplificado.']
+];
+function subSetupUI(){
+ $('substitutionSteps').innerHTML='<section class="card"><b>Método de sustitución</b><p class="small">Elige una ecuación y una incógnita para despejar. Se usará la otra ecuación para sustituir.</p><label>Ecuación <select id="subEq"><option value="1">1</option><option value="2">2</option></select></label> <label>Despejar <select id="subVar"><option value="y">y</option><option value="x">x</option></select></label></section>'+
+ subNames.map(([id,title,hint])=>`<section class="step substep inactive" id="box${id}"><div class="header"><strong id="title${id}">${title}</strong><span class="attempt" id="attempt${id}">Intentos: 0/3</span></div><p class="small">${hint}</p><math-field id="m${id}" virtual-keyboard-mode="off" disabled></math-field><div class="actions"><button id="b${id}" disabled>Revisar</button><button id="na${id}" class="gray hidden" disabled>No aplica</button><span id="f${id}" class="feedback"></span></div><div id="h${id}" class="hint"></div></section>`).join('');
+ for(const id of subIDs){$('b'+id).onclick=()=>subReview(id);$('na'+id).onclick=()=>subReview(id,true)}
+ $('subEq').onchange=resetSubstitution;$('subVar').onchange=resetSubstitution;
+}
+function subData(){
+ const first=subEq===1?{A:E.a,B:E.b,C:E.e}:{A:E.c,B:E.d,C:E.f};
+ const second=subEq===1?{A:E.c,B:E.d,C:E.f}:{A:E.a,B:E.b,C:E.e};
+ const v=subVar,w=subKnown;
+ const coef=v==='x'?first.A:first.B, rem=v==='x'?first.B:first.A;
+ const otherCoefV=v==='x'?second.A:second.B, otherCoefW=w==='x'?second.A:second.B;
+ const numerator=`(${first.C})-(${rem})*${w}`;
+ const iso=`(${numerator})/(${coef})`;
+ const k=otherCoefW-otherCoefV*rem/coef;
+ const n=second.C-otherCoefV*first.C/coef;
+ return {first,second,coef,rem,otherCoefV,otherCoefW,numerator,iso,k,n,w,v};
+}
+function resetSubstitution(){
+ if(!$('subEq'))return;
+ subEq=Number($('subEq').value);subVar=$('subVar').value;subKnown=subVar==='x'?'y':'x';
+ subIndex=0;subBlocked=false;subTries={};subRoute=null;subRouteEq=null;
+ $('variable').disabled=true;
+ for(const id of subIDs){subTries[id]=0;$('attempt'+id).textContent='Intentos: 0/3';$('f'+id).textContent='';$('h'+id).textContent='';$('m'+id).value='';$('m'+id).disabled=true;$('b'+id).disabled=true;$('na'+id).disabled=true;$('na'+id).classList.add('hidden');$('box'+id).className='step substep inactive'}
+ $('subEq').disabled=false;$('subVar').disabled=false;
+ $('titles31')?.textContent;
+ $('titles41')?.textContent;
+ subUnlock();
+}
+function subDirectCancel(){
+ const d=subData();
+ return Math.abs(d.coef)>1 && d.otherCoefV%d.coef===0;
+}
+function subScale(){return subDirectCancel()?1:Math.abs(subData().coef)}
+function subNeedFractions(){return Math.abs(subData().coef)!==1 && !subDirectCancel()}
+function subBase(){
+ const d=subData(),scale=subScale(),factor=scale/d.coef;
+ return {...d,scale,factor,
+  lhsK:scale*d.otherCoefW,
+  lhsConst:factor*d.otherCoefV*d.first.C,
+  lhsExtra:-factor*d.otherCoefV*d.rem,
+  rhs:scale*d.second.C,
+  finalK:scale*d.k,
+  finalN:scale*d.n};
+}
+function subLastBefore24(){
+ // Fuente efectiva: los pasos «No aplica» no producen una nueva ecuación.
+ if(subNeedFractions())return $('ms23').value;
+ if(subDirectCancel())return $('ms22').value;
+ return $('ms21').value;
+}
+function subCanSkip24(){
+ try{
+  const [l,r]=parts(subLastBefore24());
+  // No hay una distribución pendiente cuando los términos ya están expandidos.
+  // La agrupación/simplificación corresponde al paso 3, no al 2.4.
+  const hasPendingProducts=(side)=>{
+   let pending=false;
+   math.parse(side).traverse(node=>{
+    if(!node.isOperatorNode||node.op!=='*')return;
+    const args=node.args||[];
+    if(args.some(arg=>arg.isOperatorNode&&(arg.op==='+'||arg.op==='-')&&arg.args.length===2))pending=true;
+   });
+   return pending;
+  };
+  return !hasPendingProducts(l)&&!hasPendingProducts(r);
+ }catch(e){return false}
+}
+function subLastFor31(){return subCanSkip24()?subLastBefore24():$('ms24').value}
+function subNeedDivision(){return Math.abs(subBase().finalK)!==1}
+function subUnlock(){
+ const id=subIDs[subIndex];if(!id)return;
+ if(id==='s23'&&!subNeedFractions()){$('box'+id).querySelector('.small').textContent='No quedan denominadores: selecciona «No aplica».';}
+ if(id==='s24'&&subCanSkip24()){$('box'+id).querySelector('.small').textContent='No quedan productos por distribuir: selecciona «No aplica». Continúa agrupando en el paso 3.';}
+ if(id==='s22'&&subDirectCancel()){
+  $('title'+id).textContent='2.2. Cancelar directamente el factor común';
+  $('box'+id).querySelector('.small').textContent='Cancela el coeficiente con el denominador, sin multiplicar toda la igualdad.';
+ }else if(id==='s22'){
+  $('title'+id).textContent='2.2. Multiplicar por el denominador común';
+  $('box'+id).querySelector('.small').textContent='Multiplica ambos miembros; deja las operaciones indicadas.';
+ }
+ $('box'+id).classList.remove('inactive');$('m'+id).disabled=false;$('b'+id).disabled=false;
+ if((id==='s22'&&!subDirectCancel()&&!subNeedFractions())||(id==='s23'&&!subNeedFractions())||(id==='s34'&&!subNeedDivision())||(id==='s24'&&subCanSkip24())){$('na'+id).classList.remove('hidden');$('na'+id).disabled=false}
+}
+function subCheck(id,skip){
+ const d=subData(),{v,w,iso,k,n}=d;
+ if(skip)return ((id==='s22'&&!subDirectCancel()&&!subNeedFractions())||(id==='s23'&&!subNeedFractions())||(id==='s34'&&!subNeedDivision())||(id==='s24'&&subCanSkip24()));
+ const raw=$('m'+id).value,[l,r]=parts(raw);
+ if(id==='s1')return checkIsolated(raw,subEq,v);
+ if(id==='s21'){
+  // The substituted equation must still show the inner expression and its multiplier.
+  const target=`(${d.otherCoefW})*${w}+(${d.otherCoefV})*(${iso})`;
+  const target2=`(${d.otherCoefV})*(${iso})+(${d.otherCoefW})*${w}`;
+  if(!eqv(l,target)||!eqv(r,String(d.second.C)))return false;
+  // Si el coeficiente de la incógnita sustituida es ±1, no se exige
+  // escribir una multiplicación explícita: y=(x-1)/4 puede aparecer
+  // directamente como +(x-1)/4. Para otros coeficientes se exige el producto.
+  // Una sustitución puede ser polinómica y no contener fracciones.
+  // Si el despeje tiene denominador distinto de ±1, sí debe conservarse
+  // la estructura fraccionaria; con denominador ±1 basta la agrupación.
+  if(!l.includes(w))return false;
+  if(Math.abs(d.coef)!==1 && !l.includes('/'))return false;
+  if(Math.abs(d.otherCoefV)!==1 && !l.includes('*'))return false;
+  return true;
+ }
+ if(id==='s22'){
+  if(subDirectCancel()){
+   const b=subBase(),prev=parts($('ms21').value);
+   const numerator=`(${d.first.C})-(${d.rem})*${w}`;
+   const expected=`(${d.otherCoefW})*${w}+(${d.otherCoefV/d.coef})*(${numerator})`;
+   const valid=(eqv(l,expected)&&eqv(r,String(d.second.C)))||
+     (eqv(r,expected)&&eqv(l,String(d.second.C)));
+   // The fraction must actually be cancelled; do not force unnecessary parentheses.
+   return valid&&!l.includes('/')&&!r.includes('/');
+  }
+  if(!subNeedFractions())return false;
+  const b=subBase(),prev=parts($('ms21').value);
+  // Accept both sides interchanged; require the scaling still visibly present.
+  const leftTarget=`(${b.scale})*(${prev[0]})`,rightTarget=`(${b.scale})*(${prev[1]})`;
+  const valid=(eqv(l,leftTarget)&&eqv(r,rightTarget))||(eqv(r,leftTarget)&&eqv(l,rightTarget));
+  return valid && (l.includes('*')||r.includes('*')) && (l.includes('/')||r.includes('/'));
+ }
+ if(id==='s23'){
+  if(!subNeedFractions())return false;
+  const b=subBase(), numerator=`(${d.first.C})-(${d.rem})*${w}`;
+  const expected=`(${b.scale*d.otherCoefW})*${w}+(${b.factor*d.otherCoefV})*(${numerator})`;
+  // After cancellation there must be no division; numerator must still be grouped.
+  const valid=(eqv(l,expected)&&eqv(r,String(b.rhs)))||(eqv(r,expected)&&eqv(l,String(b.rhs)));
+  return valid && !l.includes('/')&&!r.includes('/');
+ }
+ if(id==='s24'){
+  const b=subBase();
+  const expected=`(${b.lhsK})*${w}+(${b.lhsExtra})*${w}+(${b.lhsConst})`;
+  const valid=(eqv(l,expected)&&eqv(r,String(b.rhs)))||(eqv(r,expected)&&eqv(l,String(b.rhs)));
+  if(!valid)return false;
+  const expr=eqv(r,String(b.rhs))?l:r;
+  // Preserve separate variable terms and constants before grouping.
+  return topTerms(expr).length>=3;
+ }
+ if(id==='s31'){
+  // Validate the student's actual preceding equation, not regenerated coefficients.
+  const previous24=subLastFor31();
+  const [prevL,prevR]=parts(previous24),L=linear(l,w),R=linear(r,w);
+  const left=near(L.c,0)&&near(R.k,0),right=near(R.c,0)&&near(L.k,0);
+  if(!left&&!right)return false;
+  const variableSide=left?l:r,constantSide=left?r:l;
+  const variableTerms=topTerms(variableSide),constantTerms=topTerms(constantSide);
+  if(variableTerms.length<2||constantTerms.length<2)return false;
+  if(!termsHaveVariable(variableTerms,w)||!termsAreNumeric(constantTerms))return false;
+  // Equation may be multiplied by -1 or have its sides exchanged.
+  return eqv(`(${l})-(${r})`,`(${prevL})-(${prevR})`)||
+         eqv(`(${l})-(${r})`,`(${prevR})-(${prevL})`);
+ }
+ if(id==='s32'){
+  const [prevL,prevR]=parts($('ms31').value),L=linear(l,w),R=linear(r,w);
+  const left=near(L.c,0)&&near(R.k,0),right=near(R.c,0)&&near(L.k,0);
+  if(!left&&!right)return false;
+  const variableSide=left?l:r,constantSide=left?r:l;
+  if(topTerms(variableSide).length!==1||topTerms(constantSide).length!==1)return false;
+  return eqv(`(${l})-(${r})`,`(${prevL})-(${prevR})`)||
+         eqv(`(${l})-(${r})`,`(${prevR})-(${prevL})`);
+ }
+ if(id==='s33')return divisionStage(raw,w,E[w],subNeedDivision());
+ if(id==='s34')return isFinal(raw,w,E[w])&&!hasUnreducedDivision(r);
+ if(id==='s41'){
+  // Ruta A: sustituir en el despeje. No imponer paréntesis superfluos.
+  if(l===v && !/[xy]/.test(r)){
+   const substituted=iso.replaceAll(w,`(${E[w]})`);
+   if(eqv(r,substituted) && /[+*/-]/.test(r) && (String(raw).includes(String(E[w])) || r.includes(String(E[w])))){
+    subRoute='despeje';subRouteEq=null;return true;
+   }
+  }
+  // Ruta B: aceptar sustitución en cualquiera de las ecuaciones originales.
+  // Comparar los coeficientes de la incógnita restante, no el texto exacto.
+  // Esto evita falsos rechazos con 2(1), -1(3), signos y factores implícitos.
+  for(const [index,A,B,C] of [[1,E.a,E.b,E.e],[2,E.c,E.d,E.f]]){
+   const cv=w==='x'?A:B, dv=v==='x'?A:B;
+   if(new RegExp('\\b'+w+'\\b').test(l+r))continue;
+   if(!new RegExp('\\b'+v+'\\b').test(l+r))continue;
+   let left,right;
+   try{left=linear(l,v);right=linear(r,v)}catch(err){continue}
+   // Igualdad equivalente a dv*v + cv*valorConocido = C,
+   // admitiendo intercambiar ambos miembros.
+   const direct=near(left.k,dv)&&near(left.c,cv*E[w])&&near(right.k,0)&&near(right.c,C);
+   const reversed=near(right.k,dv)&&near(right.c,cv*E[w])&&near(left.k,0)&&near(left.c,C);
+   if(!direct&&!reversed)continue;
+   // Pedimos que la sustitución permanezca indicada (no simplificada).
+   // Reconoce 2(1), 2\cdot1, 2*1, y coeficientes ±1 con paréntesis.
+   const originalLatex=String(raw);
+   const substitutedSide=direct?l:r;
+   const literalValue=String(E[w]);
+   const hasValue=originalLatex.includes(literalValue)||substitutedSide.includes(literalValue);
+   const hasOperation=/\\left|\\right|\\cdot|\\times|[()*]/.test(originalLatex)||/[()*]/.test(substitutedSide);
+   if(!hasValue||!hasOperation)continue;
+   subRoute='original';subRouteEq=index;return true;
+  }
+  return false;
+ }
+ if(id==='s42'){
+  if(subRoute==='despeje'){
+   if(l!==v||/[xy]/.test(r)||!near(val(r),E[v]))return false;
+   return true;
+  }
+  if(subRoute==='original'){
+   const [pl,pr]=parts($('ms41').value);
+   // Must remain a linear equation in the unknown, with arithmetic reduced.
+   if(new RegExp('\\b'+w+'\\b').test(l+r))return false;
+   const L=linear(l,v),R=linear(r,v),pL=linear(pl,v),pR=linear(pr,v);
+   if(!near(L.k-R.k,pL.k-pR.k)||!near(L.c-R.c,pL.c-pR.c))return false;
+   // One variable term on one side, numeric value on the other.
+   const left=near(L.c,0)&&near(R.k,0),right=near(R.c,0)&&near(L.k,0);
+   if(!left&&!right)return false;
+   const variableExpr=left?l:r,numericExpr=left?r:l;
+   return topTerms(variableExpr).length===1 && topTerms(numericExpr).length===1;
+  }
+  return false;
+ }
+ if(id==='s43')return isFinal(raw,v,E[v])&&!hasUnreducedDivision(r);
+ return false;
+}
+function subReview(id,skip=false){
+ if(subBlocked||subIDs[subIndex]!==id)return;
+ try{
+  if(subCheck(id,skip)){
+   $('f'+id).textContent='✅ Correcto';$('f'+id).className='feedback ok';$('b'+id).disabled=true;$('m'+id).disabled=true;$('na'+id).disabled=true;$('box'+id).classList.add('completed');
+   if(id==='s1'){$('subEq').disabled=true;$('subVar').disabled=true}
+   if(id==='s41'&&subRoute==='original'){$('boxs42').querySelector('.small').textContent='Despeja la incógnita restante en la ecuación original ya sustituida; realiza las operaciones numéricas.';}
+   subIndex++;if(subIndex<subIDs.length)subUnlock();else $('done').classList.remove('hidden');
+   return;
+  }
+  $('f'+id).textContent='❌ La transformación no corresponde a este subpaso.';
+ }catch(e){$('f'+id).textContent='❌ '+e.message}
+ subTries[id]++;$('attempt'+id).textContent='Intentos: '+subTries[id]+'/3';$('f'+id).className='feedback bad';
+ if(subTries[id]===2)$('h'+id).textContent={
+ s22:subDirectCancel()?'Cancela el factor del coeficiente con el denominador y conserva los demás términos.':'Multiplica toda la igualdad por el valor absoluto del denominador y deja la multiplicación indicada.',
+ s23:'Cancela el denominador. Los paréntesis exteriores son opcionales si no alteran el resultado.',
+ s24:'Distribuye los factores; no juntes todavía los términos con variable.'
+ }[id]||'Revisa los signos, la sustitución y el tipo de operación que se pide en esta etapa.';
+ if(subTries[id]>=3){subBlocked=true;$('f'+id).textContent='❌ Ejercicio bloqueado. Genera uno nuevo.';for(const k of subIDs){$('b'+k).disabled=true;$('m'+k).disabled=true}}
+}
+subSetupUI();
+
+// MÉTODO DE ELIMINACIÓN — módulo independiente de igualación y sustitución.
+const elimStages=[
+ ['e1','1. Elegir multiplicadores','Escribe los multiplicadores enteros para la ecuación 1 y la ecuación 2. Se admiten distintos múltiplos válidos.'],
+ ['e2','2. Multiplicar las ecuaciones','Escribe directamente ambas ecuaciones transformadas, con los productos ya efectuados.'],
+ ['e31','3.1. Sumar o restar ecuaciones','Suma o resta y escribe directamente la igualdad simplificada con una incógnita.'],
+ ['e32','3.2. Despejar la incógnita','Deja indicada la división por el coeficiente.'],
+ ['e33','3.3. Simplificar el resultado','Escribe la primera incógnita con su valor final.'],
+ ['e41','4.1. Sustituir en una ecuación original','Reemplaza la primera incógnita por su valor; deja indicada la multiplicación.'],
+ ['e42','4.2. Efectuar las operaciones','Calcula el producto numérico, conservando el término de la incógnita pendiente.'],
+ ['e43','4.3. Agrupar variables y constantes','Deja el término con la incógnita en un lado y los números en el otro.'],
+ ['e44','4.4. Simplificar términos','Efectúa la resta o suma de constantes.'],
+ ['e45','4.5. Despejar','Deja indicada la división entre el coeficiente.'],
+ ['e46','4.6. Resultado final','Escribe el valor simplificado de la segunda incógnita.']
+];
+let elimIdx=0,elimAttempts={},elimM=[1,1],elimChoice='y',elimOp='+',elimSubEq=1,elimBlocked=false;
+function elimCoef(eq,v){return eq===1?(v==='x'?E.a:E.b):(v==='x'?E.c:E.d)}
+function elimConst(eq){return eq===1?E.e:E.f}
+function elimOther(){return elimChoice==='x'?'y':'x'}
+function elimLCM(a,b){function gcd(x,y){while(y){[x,y]=[y,x%y]}return x}return Math.abs(a*b)/gcd(Math.abs(a),Math.abs(b))}
+function elimDefault(){let a=elimCoef(1,elimChoice),b=elimCoef(2,elimChoice),l=elimLCM(a,b);return [l/a,-l/b]}
+function elimBuild(){
+ $('eliminationSteps').innerHTML=`<section class="card"><strong>Método de eliminación (reducción)</strong><p class="small">Selecciona la incógnita que quieres eliminar. Puedes multiplicar las ecuaciones para obtener coeficientes opuestos o iguales y después sumar o restar.</p><label>Eliminar <select id="elimChoice"><option value="y">y</option><option value="x">x</option></select></label><p class="small" id="elimHelp"></p></section>`+
+ elimStages.map(([id,title,hint])=>`<section class="step substep inactive" id="box${id}"><div class="header"><strong>${title}</strong><span class="attempt" id="attempt${id}">Intentos: 0/3</span></div><p class="small">${hint}</p>${id==='e1'?'<div class="actions"><label>Factor ecuación 1 <input id="em1" type="number" step="1" style="width:85px;padding:10px"></label><label>Factor ecuación 2 <input id="em2" type="number" step="1" style="width:85px;padding:10px"></label></div>':id==='e2'?`<p class="small">Ecuación 1</p><math-field id="m${id}a" virtual-keyboard-mode="off" disabled></math-field><p class="small">Ecuación 2</p><math-field id="m${id}b" virtual-keyboard-mode="off" disabled></math-field>`:`<math-field id="m${id}" virtual-keyboard-mode="off" disabled></math-field>`}<div class="actions"><button id="b${id}" disabled>Revisar</button>${['e42','e43','e44','e45','e46'].includes(id)?`<button id="na${id}" class="gray hidden" disabled>No aplica</button>`:''}<span id="f${id}" class="feedback"></span></div><div id="h${id}" class="hint"></div></section>`).join('');
+ for(const [id] of elimStages){$('b'+id).onclick=()=>elimReview(id,false);if($('na'+id))$('na'+id).onclick=()=>elimReview(id,true)}
+ $('elimChoice').onchange=elimReset;
+}
+function elimReset(){
+ if(!$('elimChoice'))return;elimChoice=$('elimChoice').value;elimIdx=0;elimAttempts={};elimBlocked=false;elimM=[1,1];elimOp='+';elimSubEq=1;
+ $('elimChoice').disabled=false;$('elimHelp').textContent='Busca factores que hagan iguales u opuestos los coeficientes de '+elimChoice+'.';
+ for(const [id] of elimStages){elimAttempts[id]=0;$('attempt'+id).textContent='Intentos: 0/3';$('f'+id).textContent='';$('f'+id).className='feedback';$('h'+id).textContent='';$('box'+id).className='step substep inactive';$('b'+id).disabled=true;if($('na'+id)){$('na'+id).disabled=true;$('na'+id).classList.add('hidden')}for(const suffix of (id==='e2'?['a','b']:id==='e1'?[]:[''])){let m=$('m'+id+suffix);m.value='';m.disabled=true}}
+ $('em1').value='1';$('em2').value='1';$('em1').disabled=false;$('em2').disabled=false;elimUnlock();
+}
+function elimValues(){const [p,q]=elimM, v=elimOther();return {v,A:p*elimCoef(1,v),B:q*elimCoef(2,v),C:p*elimConst(1),D:q*elimConst(2),u:p*elimCoef(1,elimChoice),z:q*elimCoef(2,elimChoice)}}
+function elimOperation(){let d=elimValues();return near(d.u+d.z,0)?1:-1}
+function elimK(){let d=elimValues(),t=elimOperation();return {k:d.A+t*d.B,n:d.C+t*d.D,v:d.v,t}}
+function elimExpectedEq(eq,mult){return {a:mult*elimCoef(eq,'x'),b:mult*elimCoef(eq,'y'),c:mult*elimConst(eq)}}
+function elimMatchEquation(raw,obj){let [l,r]=parts(raw);return (eqv(l,`(${obj.a})*x+(${obj.b})*y`)&&eqv(r,String(obj.c)))||(eqv(r,`(${obj.a})*x+(${obj.b})*y`)&&eqv(l,String(obj.c)))}
+function elimDevelopedEquation(raw,obj){
+ const [l,r]=parts(raw);
+ const expected=`(${obj.a})*x+(${obj.b})*y`;
+ const side=(eqv(l,expected)&&eqv(r,String(obj.c)))?l:
+            (eqv(r,expected)&&eqv(l,String(obj.c)))?r:null;
+ if(side===null)return false;
+ // Require the equation to have separate x and y terms, not an undistributed factor.
+ return topTerms(side).length===2 && !/\([^)]*[xy][^)]*[+-][^)]*[xy][^)]*\)/.test(side);
+}
+function elimTerms(s){return topTerms(s).length}
+function elimHasSymbol(s,v){return new RegExp('(^|[^a-z])'+v+'([^a-z]|$)').test(s)}
+function elimNoVariable(s,v){return !elimHasSymbol(s,v)}
+function elimIsEq(raw,v,expected){return isFinal(raw,v,expected)}
+function elimSkip(id){let {k,n,v}=elimK();if(id==='e2')return false;
+ if(id==='e42')return Math.abs(elimCoef(elimSubEq,v)*E[v])===0;
+ // Si el producto sustituido vale cero, 4.2 ya deja la incógnita aislada:
+ // no hay constantes que trasladar ni operaciones adicionales que efectuar.
+ const substituted=elimCoef(elimSubEq,v)*E[v];
+ if(id==='e43')return near(substituted,0);
+ if(id==='e44')return near(substituted,0);
+ if(id==='e45')return Math.abs(elimCoef(elimSubEq,elimChoice))===1;
+ // Si 4.5 ya produjo el valor final (coeficiente ±1), 4.6 no debe repetirlo.
+ if(id==='e46'){
+  const prior=$('me45')?.value||'';
+  return Math.abs(elimCoef(elimSubEq,elimChoice))===1 &&
+   $('boxe45')?.classList.contains('completed') &&
+   elimIsEq(prior,elimChoice,E[elimChoice]);
+ }
+ return false}
+function elimUnlock(){let id=elimStages[elimIdx]?.[0];if(!id)return;$('box'+id).classList.remove('inactive');$('b'+id).disabled=false;
+ if(id==='e1'){return}for(const suffix of (id==='e2'?['a','b']:['']))$('m'+id+suffix).disabled=false;
+ if($('na'+id)&&elimSkip(id)){$('na'+id).disabled=false;$('na'+id).classList.remove('hidden')}
+}
+function elimCheck(id,skip){
+ if(skip)return elimSkip(id);
+ if(id==='e1'){
+  let p=Number($('em1').value),q=Number($('em2').value),a=elimCoef(1,elimChoice),b=elimCoef(2,elimChoice);
+  if(!$('em1').value||!$('em2').value||!Number.isInteger(p)||!Number.isInteger(q)||!p||!q)return false;
+  if(Math.abs(p)>100||Math.abs(q)>100)return false;
+  // Admitir coeficientes opuestos (suma) o iguales (resta).
+  if(!(p*a===-q*b||p*a===q*b))return false;
+  elimM=[p,q];return true;
+ }
+ if(id==='e2'){
+  for(let j=1;j<=2;j++){
+   let raw=$('m'+id+(j===1?'a':'b')).value, mult=elimM[j-1],o=elimExpectedEq(j,mult);
+   if(!elimMatchEquation(raw,o))return false;
+   // La etapa única acepta ecuaciones desarrolladas sin imponer paréntesis ni productos indicados.
+   if(!elimDevelopedEquation(raw,o))return false;
+  }return true;
+ }
+ const raw=$('m'+id).value,[l,r]=parts(raw),d=elimValues(),h=elimK(),v=h.v;
+ if(id==='e31'){
+  // La suma o resta se efectúa completamente en este subpaso.
+  // Admitimos intercambiar miembros o multiplicar la igualdad por -1,
+  // pero no conservar la incógnita que debía eliminarse.
+  const valid=equationEquivalent([l,r],[`(${h.k})*${v}`,String(h.n)]);
+  if(!valid||!elimNoVariable(l,elimChoice)||!elimNoVariable(r,elimChoice))return false;
+  const L=linear(l,v),R=linear(r,v);
+  const standard=near(L.c,0)&&near(R.k,0);
+  const reversed=near(R.c,0)&&near(L.k,0);
+  if(!standard&&!reversed)return false;
+  const variableSide=standard?l:r,numberSide=standard?r:l;
+  return elimTerms(variableSide)===1&&elimTerms(numberSide)===1;
+ }
+ if(id==='e32')return divisionStage(raw,v,E[v],Math.abs(h.k)!==1);
+ if(id==='e33')return elimIsEq(raw,v,E[v])&&!hasUnreducedDivision(r);
+ let j=elimSubEq,A=elimCoef(j,v),B=elimCoef(j,elimChoice),C=elimConst(j),w=elimChoice;
+ if(id==='e41'){
+  for(let eq=1;eq<=2;eq++){
+   A=elimCoef(eq,v);B=elimCoef(eq,w);C=elimConst(eq);
+   let expected=`(${A})*(${E[v]})+(${B})*${w}`;
+   if((eqv(l,expected)&&eqv(r,String(C)))||(eqv(r,expected)&&eqv(l,String(C)))){
+    if(!convert(raw).includes(String(E[v])))continue;
+    elimSubEq=eq;return true;
+   }
+  }return false;
+ }
+ if(id==='e42')return equationEquivalent([l,r],[`(${A*E[v]})+(${B})*${w}`,String(C)])&&elimHasSymbol(l+r,w);
+ if(id==='e43')return equationEquivalent([l,r],[`(${B})*${w}`,`(${C})-(${A*E[v]})`])&&elimHasSymbol(l+r,w);
+ if(id==='e44')return equationEquivalent([l,r],[`(${B})*${w}`,String(C-A*E[v])])&&elimHasSymbol(l+r,w);
+ if(id==='e45')return divisionStage(raw,w,E[w],Math.abs(B)!==1);
+ if(id==='e46')return elimIsEq(raw,w,E[w])&&!hasUnreducedDivision(r);
+ return false;
+}
+function elimReview(id,skip){
+ if(id==='e1'&&!skip){
+  const t1=$('em1').value.trim(),t2=$('em2').value.trim();
+  if(!t1||!t2){$('f'+id).textContent='Escribe ambos factores (usa 1 si una ecuación no cambia).';$('f'+id).className='feedback bad';return}
+  const p=Number(t1),q=Number(t2),a=elimCoef(1,elimChoice),b=elimCoef(2,elimChoice);
+  if(Number.isInteger(p)&&Number.isInteger(q)&&p!==0&&q!==0&&Math.abs(p)<=100&&Math.abs(q)<=100&&Math.abs(p*a)!==Math.abs(q*b)){
+   $('f'+id).textContent='Los coeficientes obtenidos son '+(p*a)+' y '+(q*b)+'. Deben ser iguales u opuestos para eliminar '+elimChoice+'.';
+   $('f'+id).className='feedback bad';return;
+  }
+ }
+ if(elimBlocked||elimStages[elimIdx]?.[0]!==id)return;
+ try{if(elimCheck(id,skip)){
+  $('f'+id).textContent='✅ Correcto';$('f'+id).className='feedback ok';$('box'+id).classList.add('completed');$('b'+id).disabled=true;if($('na'+id))$('na'+id).disabled=true;
+  for(const suffix of (id==='e2'?['a','b']:id==='e1'?[]:['']))$('m'+id+suffix).disabled=true;
+  if(id==='e1'){$('em1').disabled=true;$('em2').disabled=true;$('elimChoice').disabled=true}
+  elimIdx++;if(elimIdx<elimStages.length)elimUnlock();else $('done').classList.remove('hidden');return;
+ }}catch(err){$('h'+id).textContent='Revisa el formato de la igualdad y los signos: '+err.message}
+ elimAttempts[id]++;$('attempt'+id).textContent='Intentos: '+elimAttempts[id]+'/3';$('f'+id).textContent='❌ La transformación no corresponde a este subpaso.';$('f'+id).className='feedback bad';
+ if(elimAttempts[id]===2)$('h'+id).textContent='Comprueba que mantienes la equivalencia y realizas solamente la operación solicitada.';
+ if(elimAttempts[id]>=3){elimBlocked=true;$('f'+id).textContent='❌ Ejercicio bloqueado. Genera uno nuevo.';for(const [k] of elimStages){$('b'+k).disabled=true;if($('na'+k))$('na'+k).disabled=true}}
+}
+elimBuild();
+
+buildSubs();
+$('b22').onclick=()=>review('22');
+$('b23').onclick=()=>review('23');
+$('na22').onclick=()=>review('22',true);
+$('na23').onclick=()=>review('23',true);
+$('method').onchange=reset;$('new').onclick=reset;$('variable').onchange=labels;$('b1').onclick=()=>review('1');$('b2').onclick=()=>review('2');
+$('toggle').onclick=()=>$('checkarea').classList.toggle('hidden');
+$('bc').onclick=()=>{try{let ok=near(val(convert($('c1').value)),E.e)&&near(val(convert($('c2').value)),E.f);$('fc').textContent=ok?'✅ Ambas ecuaciones comprobadas.':'❌ Revisa los resultados.';$('fc').className='feedback '+(ok?'ok':'bad')}catch(err){$('fc').textContent='❌ Escribe ambos resultados numéricos.';$('fc').className='feedback bad'}};
+window.addEventListener('load',reset);
+</script></body></html>
